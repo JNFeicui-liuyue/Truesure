@@ -1,6 +1,9 @@
-package contacts.feicui.edu.truesure.user;
+package contacts.feicui.edu.truesure.user.login;
 
+import android.app.ProgressDialog;
+import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextUtils;
@@ -11,14 +14,17 @@ import android.widget.EditText;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import contacts.feicui.edu.truesure.MainActivity;
 import contacts.feicui.edu.truesure.R;
 import contacts.feicui.edu.truesure.commons.ActivityUtils;
 import contacts.feicui.edu.truesure.commons.RegexUtils;
+import contacts.feicui.edu.truesure.home.HomeActivity;
 
 /**
  * 登录视图
+ * 我们的登录业务，是不是只要针对LoginView来做就行了
  */
-public class LoginActivity extends AppCompatActivity {
+public class LoginActivity extends AppCompatActivity implements LoginView{
 
     @Bind(R.id.et_Password)EditText etPassword;
     @Bind(R.id.et_Username) EditText etUsername;
@@ -80,7 +86,60 @@ public class LoginActivity extends AppCompatActivity {
             mActivityUtils.showToast(R.string.password_rules);
             return;
         }
+        //当前Activity已经实现了接口
+        new LoginPresenter(this).login();
+        //分析用例----业务逻辑上的
+        //分析你要干嘛
+        //抽出接口（要做些什么）
+
         // 执行业务
-        //
+        //1.提出一个视图接口
+        //   当前Activity来实现这个接口
+        /**
+         * 执行网络连接
+         * 连接网络
+         * 如果出错-显示错误视图（View相关代码）
+         * 读取数据
+         *     如果出错-显示错误视图（View相关代码）
+         * 完成
+         *     成功
+         *     数据交到视图上来显示（View相关代码）
+         */
+    }
+
+    private ProgressDialog mProgressDialog;
+    @Override
+    public void showProgress() {
+
+        //隐藏键盘
+        mActivityUtils.hideSoftKeyboard();
+        mProgressDialog = ProgressDialog.show(this, "", "登陆中,请稍后...");
+    }
+
+    @Override
+    public void hideProgress() {
+
+        if (mProgressDialog != null){
+            mProgressDialog.dismiss();
+        }
+
+    }
+
+    @Override
+    public void showMessage(String msg) {
+
+        mActivityUtils.showToast(msg);
+    }
+
+    @Override
+    public void navigateToHome() {
+        // 切换到Home页面
+        mActivityUtils.startActivity(HomeActivity.class);
+        // 关闭当前页面
+        finish();
+        //关闭入口Main页面(通过发送本地广播)
+        Intent intent = new Intent(MainActivity.ACTION_ENTER_HOME);
+        LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
+
     }
 }
