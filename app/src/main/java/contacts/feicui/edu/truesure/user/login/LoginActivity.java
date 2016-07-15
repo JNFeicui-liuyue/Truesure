@@ -3,13 +3,15 @@ package contacts.feicui.edu.truesure.user.login;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.content.LocalBroadcastManager;
-import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.widget.Button;
 import android.widget.EditText;
+
+import com.hannesdorfmann.mosby.mvp.MvpActivity;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -19,12 +21,13 @@ import contacts.feicui.edu.truesure.R;
 import contacts.feicui.edu.truesure.commons.ActivityUtils;
 import contacts.feicui.edu.truesure.commons.RegexUtils;
 import contacts.feicui.edu.truesure.home.HomeActivity;
+import contacts.feicui.edu.truesure.user.User;
 
 /**
  * 登录视图
  * 我们的登录业务，是不是只要针对LoginView来做就行了
  */
-public class LoginActivity extends AppCompatActivity implements LoginView{
+public class LoginActivity extends MvpActivity<LoginView,LoginPresenter> implements LoginView{
 
     @Bind(R.id.et_Password)EditText etPassword;
     @Bind(R.id.et_Username) EditText etUsername;
@@ -50,6 +53,12 @@ public class LoginActivity extends AppCompatActivity implements LoginView{
         etPassword.addTextChangedListener(mTextWAtcher);
         etUsername.addTextChangedListener(mTextWAtcher);
 
+    }
+
+    @NonNull
+    @Override
+    public LoginPresenter createPresenter() {
+        return new LoginPresenter();
     }
 
     private final TextWatcher mTextWAtcher = new TextWatcher() {
@@ -87,12 +96,13 @@ public class LoginActivity extends AppCompatActivity implements LoginView{
             return;
         }
         //当前Activity已经实现了接口
-        new LoginPresenter(this).login();
+//        new LoginPresenter().login();
         //分析用例----业务逻辑上的
         //分析你要干嘛
         //抽出接口（要做些什么）
 
         // 执行业务
+        getPresenter().login(new User(userName,passWord));
         //1.提出一个视图接口
         //   当前Activity来实现这个接口
         /**

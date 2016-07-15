@@ -3,22 +3,25 @@ package contacts.feicui.edu.truesure.user.register;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.content.LocalBroadcastManager;
-import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.widget.Button;
 import android.widget.EditText;
 
+import com.hannesdorfmann.mosby.mvp.MvpActivity;
+
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import contacts.feicui.edu.truesure.MainActivity;
-import contacts.feicui.edu.truesure.home.HomeActivity;
 import contacts.feicui.edu.truesure.R;
 import contacts.feicui.edu.truesure.commons.ActivityUtils;
 import contacts.feicui.edu.truesure.commons.RegexUtils;
+import contacts.feicui.edu.truesure.home.HomeActivity;
+import contacts.feicui.edu.truesure.user.User;
 
 /**
  * 注册视图
@@ -33,8 +36,11 @@ import contacts.feicui.edu.truesure.commons.RegexUtils;
  *               出错了       试图表现
  *               通过了（得到数据了）    视图表现（进入Home页面）
  *
+ * Okhttp库
+ * 是我们使用的网络连接框架基栈技术
+ *
  */
-public class RegisterActivity extends AppCompatActivity implements RegisterView{
+public class RegisterActivity extends MvpActivity<RegisterView, RegisterPresenter> implements RegisterView {
 
     @Bind(R.id.et_Username)EditText etUsername;
     @Bind(R.id.et_Password)EditText etPassword;
@@ -60,6 +66,12 @@ public class RegisterActivity extends AppCompatActivity implements RegisterView{
         etConfirm.addTextChangedListener(mTextWatcher);// EditText监听
         etPassword.addTextChangedListener(mTextWatcher); // EditText监听
         etUsername.addTextChangedListener(mTextWatcher); // EditText监听
+    }
+
+    @NonNull
+    @Override
+    public RegisterPresenter createPresenter() {
+        return new RegisterPresenter();
     }
 
     private final TextWatcher mTextWatcher = new TextWatcher() {
@@ -98,7 +110,8 @@ public class RegisterActivity extends AppCompatActivity implements RegisterView{
             return;
         }
         // 执行注册业务逻辑
-        new RegisterPresenter(this).register();
+//        new RegisterPresenter(this).register();
+        getPresenter().register(new User(username,password));
     }
 
     @Override
