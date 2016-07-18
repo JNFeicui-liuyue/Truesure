@@ -8,12 +8,14 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ImageView;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import contacts.feicui.edu.truesure.R;
 import contacts.feicui.edu.truesure.commons.ActivityUtils;
+import contacts.feicui.edu.truesure.user.account.AccountActivity;
 
 public class HomeActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
@@ -52,6 +54,14 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         drawerLayout.addDrawerListener(toggle);
         //在滑的过程中可以同步这种状态
         toggle.syncState();
+
+        imageView = (ImageView) navigationView.getHeaderView(0).findViewById(R.id.iv_userIcon);
+        imageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                activityUtils.startActivity(AccountActivity.class);
+            }
+        });
     }
 
     @Override

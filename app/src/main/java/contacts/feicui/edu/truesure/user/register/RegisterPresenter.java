@@ -5,6 +5,7 @@ import com.hannesdorfmann.mosby.mvp.MvpNullObjectBasePresenter;
 import contacts.feicui.edu.truesure.NetClient.NetClient;
 import contacts.feicui.edu.truesure.user.User;
 import contacts.feicui.edu.truesure.user.UserApi;
+import contacts.feicui.edu.truesure.user.UserPrefs;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -36,8 +37,9 @@ public class RegisterPresenter extends MvpNullObjectBasePresenter<RegisterView>{
                     getView().showMessage("unknown error");
                     return;
                 }
-                //注册成功(@see 接口文档)
+                //注册成功(@see 接口文档)，保存注册信息
                 if (result.getCode() == 1){
+                    UserPrefs.getInstance().setTokenid(result.getTokenId());
                     getView().navigateToHome();
                     return;
                 }

@@ -5,6 +5,7 @@ import com.hannesdorfmann.mosby.mvp.MvpNullObjectBasePresenter;
 import contacts.feicui.edu.truesure.NetClient.NetClient;
 import contacts.feicui.edu.truesure.user.User;
 import contacts.feicui.edu.truesure.user.UserApi;
+import contacts.feicui.edu.truesure.user.UserPrefs;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -43,8 +44,10 @@ public class LoginPresenter extends MvpNullObjectBasePresenter<LoginView>{
                     return;
                 }
                 getView().showMessage(result.getMsg());
-                // 登陆成功
+                // 登陆成功，保存登录信息
                 if (result.getCode() == 1) {
+                    UserPrefs.getInstance().setPhoto(NetClient.BASE_URL + result.getIconUrl());
+                    UserPrefs.getInstance().setTokenid(result.getTokenId());
                     getView().navigateToHome();
                 }
                 return;
