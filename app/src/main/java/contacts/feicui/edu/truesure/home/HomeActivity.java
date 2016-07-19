@@ -11,10 +11,13 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 
+import com.nostra13.universalimageloader.core.ImageLoader;
+
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import contacts.feicui.edu.truesure.R;
 import contacts.feicui.edu.truesure.commons.ActivityUtils;
+import contacts.feicui.edu.truesure.user.UserPrefs;
 import contacts.feicui.edu.truesure.user.account.AccountActivity;
 
 public class HomeActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
@@ -33,6 +36,16 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         activityUtils = new ActivityUtils(this);
         setContentView(R.layout.activity_home);
 
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        //每次重新进入个人中心，更新用户头像
+        String photoUrl = UserPrefs.getInstance().getPhoto();
+        if (photoUrl != null){
+            ImageLoader.getInstance().displayImage(photoUrl,imageView);
+        }
     }
 
     @Override
