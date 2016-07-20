@@ -23,13 +23,21 @@
             android:textSize="@dimen/sp_22" />
     </android.support.v7.widget.Toolbar>
 
-    <!--地图视图宝藏-->
-    <!--<fragment-->
-        <!--android:id="@+id/mapFragment"-->
-        <!--android:name="com.feicuiedu.refactorcoreth.treasure.home.map.MapFragment"-->
+    <!--地图视图宝藏 fragment-->
+
+    <!--测试代码-->
+    <!--<com.baidu.mapapi.map.MapView-->
+        <!--android:id="@+id/mapview"-->
         <!--android:layout_width="match_parent"-->
         <!--android:layout_height="match_parent"-->
-        <!--android:layout_below="@+id/toolbar" />-->
+        <!--android:clickable="true"></com.baidu.mapapi.map.MapView>-->
+
+    <fragment
+        android:name="contacts.feicui.edu.truesure.home.map.MapFragment"
+        android:id="@+id/mapFragment"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/toolbar" />
 
     <!--&lt;!&ndash;列表视图宝藏&ndash;&gt;-->
     <!--<FrameLayout-->

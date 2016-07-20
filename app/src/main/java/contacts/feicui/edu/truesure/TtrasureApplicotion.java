@@ -2,6 +2,7 @@ package contacts.feicui.edu.truesure;
 
 import android.app.Application;
 
+import com.baidu.mapapi.SDKInitializer;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
@@ -18,6 +19,8 @@ public class TtrasureApplicotion extends Application{
         super.onCreate();
         UserPrefs.init(this);
         initImageLoader();
+        //初始化百度地图
+        SDKInitializer.initialize(getApplicationContext());
     }
 
     private void initImageLoader() {

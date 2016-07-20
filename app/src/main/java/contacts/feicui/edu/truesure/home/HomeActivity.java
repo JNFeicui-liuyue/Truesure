@@ -20,6 +20,15 @@ import contacts.feicui.edu.truesure.commons.ActivityUtils;
 import contacts.feicui.edu.truesure.user.UserPrefs;
 import contacts.feicui.edu.truesure.user.account.AccountActivity;
 
+/**
+ * 直接使用统一的keystore进行开发
+ * 1.将这个统一的keystore放到项目里（指定使用的是这一个）
+ * 2.将使用这个统一的keystore的sha1值去做申请
+ * 在使用BaiduMap时，首先会去做验证（明文keystore和密文sha1是否是一个）
+ *
+ * 1.申请，配置
+ *
+ */
 public class HomeActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
     @Bind(R.id.toolbar) Toolbar toolbar;
