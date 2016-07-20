@@ -86,7 +86,7 @@ public class MapFragment extends Fragment {
 
     // 定位核心API
     private LocationClient locationClient;
-    // 我的位置(通过定位得到的当前位置经纬度)
+    // 我的位置(通过定位得到的当前位置经纬度)，全局变量
     private LatLng myLocation;
 
     private void initLocation() {
@@ -94,12 +94,14 @@ public class MapFragment extends Fragment {
         baiduMap.setMyLocationEnabled(true);
         // 定位实例化
         locationClient = new LocationClient(getActivity().getApplicationContext());
+
         // 进行一些定位的一般常规性设置
         LocationClientOption option = new LocationClientOption();
         option.setOpenGps(true); // 打开GPS
         option.setScanSpan(60000);// 扫描周期
         option.setCoorType("bd09ll");// 百度坐标类型
         locationClient.setLocOption(option);
+
         // 注册定位监听
         locationClient.registerLocationListener(locationListener);
         // 开始定位
@@ -107,13 +109,15 @@ public class MapFragment extends Fragment {
         locationClient.requestLocation(); // 请求位置(解决部分机器,初始定位不成功问题)
     }
 
+    //定位图标
     private final BitmapDescriptor dot = BitmapDescriptorFactory.fromResource(R.drawable.treasure_dot);
     private final BitmapDescriptor iconExpanded = BitmapDescriptorFactory.fromResource(R.drawable.treasure_expanded);
     // 定位监听
     private final BDLocationListener locationListener = new BDLocationListener() {
         @Override public void onReceiveLocation(BDLocation bdLocation) {
-            // 定位不成功 -- 最好UI上有表现
+            // 2.定位不成功 -- 最好UI上有表现
             if (bdLocation == null) {
+                //再请求一次
                 locationClient.requestLocation();
                 return;
             }
@@ -125,23 +129,27 @@ public class MapFragment extends Fragment {
                     .latitude(lat)
                     .accuracy(100f) // 精度（圈大小）
                     .build();
-            // 设置定位图层“我的位置”
+            //1. 设置定位图层“我的位置”
             baiduMap.setMyLocationData(myLocationData);
             // 移动到我的位置上去
             animateMoveToMyLocation();
             // 测试代码(添加Marker)-------------------------------------------
             // 显示出一个Marker(标记)
             MarkerOptions options = new MarkerOptions();
+            //标记的位置，偏移一点
             LatLng markerLatlng = new LatLng(lat+0.1f, lng+0.1f);
             options.position(markerLatlng);// 设置Marker位置
             options.icon(dot);// 设置Marker图标
-            options.anchor(0.5f,0.5f);// 设置Marker的锚点(中)
-            baiduMap.addOverlay(options); // 添加孚盖物
+            options.anchor(0.5f,0.5f);// 设置Marker的锚点(居中)
+
+            baiduMap.addOverlay(options); // 添加孚盖物，核心代码
+
             // 测试代码(监听Marker)-------------------------------------------
             baiduMap.setOnMarkerClickListener(markerClickListener);
         }
     };
 
+    //当前的标记
     private Marker currentMarker;
     // 对Marker的监听
     private final BaiduMap.OnMarkerClickListener markerClickListener = new BaiduMap.OnMarkerClickListener() {
@@ -150,7 +158,7 @@ public class MapFragment extends Fragment {
             // 设置Marker不可见
             currentMarker.setVisible(false);
             InfoWindow infoWindow = new InfoWindow(iconExpanded,marker.getPosition(),0,infoWindowClickListener);
-            // 显示一个信息窗口(icon,位置,Y,监听)
+            // 显示一个信息窗口(icon,位置,Y轴偏移量,监听)
             baiduMap.showInfoWindow(infoWindow);
             return false;
         }
@@ -164,6 +172,7 @@ public class MapFragment extends Fragment {
         }
     };
 
+    //按下定位按钮就会重新自动定位
     @OnClick(R.id.tv_located)
     public void animateMoveToMyLocation() {
         MapStatus mapStatus = new MapStatus.Builder()
@@ -172,6 +181,7 @@ public class MapFragment extends Fragment {
                 .zoom(19)
                 .build();
         MapStatusUpdate update = MapStatusUpdateFactory.newMapStatus(mapStatus);
+        //设置动画效果：慢慢移过去
         baiduMap.animateMapStatus(update);
     }
 
@@ -196,6 +206,7 @@ public class MapFragment extends Fragment {
         //卫星地图，普通地图
         type = type == BaiduMap.MAP_TYPE_NORMAL ? BaiduMap.MAP_TYPE_SATELLITE : BaiduMap.MAP_TYPE_NORMAL;
         baiduMap.setMapType(type);
+
     }
 
     // 指南针更新

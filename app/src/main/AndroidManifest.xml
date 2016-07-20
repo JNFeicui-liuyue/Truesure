@@ -36,6 +36,7 @@
             android:name="com.baidu.lbsapi.API_KEY"
             android:value="pV7HgYEXhW7MgxQt3erRwoLjTi4orwNb"/>
 
+        //让每一次定位成为一次单独的进程
         <service
             android:name="com.baidu.location.f"
             android:enabled="true"
