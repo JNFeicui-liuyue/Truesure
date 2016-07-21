@@ -1,8 +1,7 @@
-package contacts.feicui.edu.truesure.home.map;
+package contacts.feicui.edu.truesure.treasure.home.map;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,11 +24,17 @@ import com.baidu.mapapi.map.Marker;
 import com.baidu.mapapi.map.MarkerOptions;
 import com.baidu.mapapi.map.MyLocationData;
 import com.baidu.mapapi.model.LatLng;
+import com.hannesdorfmann.mosby.mvp.MvpFragment;
+
+import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import contacts.feicui.edu.truesure.R;
+import contacts.feicui.edu.truesure.commons.ActivityUtils;
+import contacts.feicui.edu.truesure.treasure.Area;
+import contacts.feicui.edu.truesure.treasure.Treasure;
 
 /**
  * 第100行待更新
@@ -46,10 +51,17 @@ import contacts.feicui.edu.truesure.R;
  * 作者：yuanchao on 2016/7/18 0018 14:05
  * 邮箱：yuanchao@feicuiedu.com
  */
-public class MapFragment extends Fragment {
+public class MapFragment extends MvpFragment<MapMvpView, MapPresenter> implements MapMvpView{
+
+    private ActivityUtils activityUtils;
 
     @Nullable @Override public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_map, container, false);
+    }
+
+    @Override
+    public MapPresenter createPresenter() {
+        return new MapPresenter();
     }
 
     @Override public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
@@ -82,7 +94,14 @@ public class MapFragment extends Fragment {
         mapFrame.addView(mapView, 0);
         // 拿到当前MapView的控制器
         baiduMap = mapView.getMap();
+
+        //监听Marker
+        baiduMap.setOnMarkerClickListener(markerClickListener);
+        //对地图状态进行监听 (将开始进行区域内宝藏数据的获取)
+        baiduMap.setOnMapStatusChangeListener(mapStatusChangeListener);
+
     }
+
 
     // 定位核心API
     private LocationClient locationClient;
@@ -133,42 +152,7 @@ public class MapFragment extends Fragment {
             baiduMap.setMyLocationData(myLocationData);
             // 移动到我的位置上去
             animateMoveToMyLocation();
-            // 测试代码(添加Marker)-------------------------------------------
-            // 显示出一个Marker(标记)
-            MarkerOptions options = new MarkerOptions();
-            //标记的位置，偏移一点
-            LatLng markerLatlng = new LatLng(lat+0.1f, lng+0.1f);
-            options.position(markerLatlng);// 设置Marker位置
-            options.icon(dot);// 设置Marker图标
-            options.anchor(0.5f,0.5f);// 设置Marker的锚点(居中)
 
-            baiduMap.addOverlay(options); // 添加孚盖物，核心代码
-
-            // 测试代码(监听Marker)-------------------------------------------
-            baiduMap.setOnMarkerClickListener(markerClickListener);
-        }
-    };
-
-    //当前的标记
-    private Marker currentMarker;
-    // 对Marker的监听
-    private final BaiduMap.OnMarkerClickListener markerClickListener = new BaiduMap.OnMarkerClickListener() {
-        @Override public boolean onMarkerClick(Marker marker) {
-            currentMarker = marker;
-            // 设置Marker不可见
-            currentMarker.setVisible(false);
-            InfoWindow infoWindow = new InfoWindow(iconExpanded,marker.getPosition(),0,infoWindowClickListener);
-            // 显示一个信息窗口(icon,位置,Y轴偏移量,监听)
-            baiduMap.showInfoWindow(infoWindow);
-            return false;
-        }
-    };
-
-    // 对InfoWindow的监听
-    private final InfoWindow.OnInfoWindowClickListener infoWindowClickListener = new InfoWindow.OnInfoWindowClickListener() {
-        @Override public void onInfoWindowClick() {
-            currentMarker.setVisible(true);
-            baiduMap.hideInfoWindow();
         }
     };
 
@@ -218,4 +202,93 @@ public class MapFragment extends Fragment {
         baiduMap.getUiSettings().setCompassEnabled(!isCompass);
     }
 
+    //对地图状态进行监听（缩放、移动等）
+    private final BaiduMap.OnMapStatusChangeListener mapStatusChangeListener = new BaiduMap.OnMapStatusChangeListener() {
+        @Override
+        public void onMapStatusChangeStart(MapStatus mapStatus) {
+
+        }
+
+        @Override
+        public void onMapStatusChange(MapStatus mapStatus) {
+
+        }
+
+        @Override
+        public void onMapStatusChangeFinish(MapStatus mapStatus) {
+            // 更新宝藏数据
+            updateMapArea();
+        }
+    };
+
+    /**
+     * 更新地图区域，重新执行业务获取宝藏(目前是只要移动，就会重新获取,会N次获取同区域数据)
+     */
+    private void updateMapArea() {
+        // 先得到你当前所在位置
+        MapStatus mapStatus = baiduMap.getMapStatus();
+        double lng = mapStatus.target.longitude;
+        double lat = mapStatus.target.latitude;
+        // 计算出你的Area  23.999  15.130
+        //              24,23  ,  16,15去确定Area
+        Area area = new Area();
+        area.setMaxLat(Math.ceil(lat));  // lat向上取整
+        area.setMaxLng(Math.ceil(lng));  // lng向上取速
+        area.setMinLat(Math.floor(lat));  // lat向下取整
+        area.setMinLng(Math.floor(lng));  // lng向下取整
+        // 执行业务,根据Area去获取宝藏
+        getPresenter().getTreasure(area);
+    }
+
+    @Override
+    public void showMessage(String msg) {
+        activityUtils.showToast(msg);
+    }
+
+    @Override
+    public void setData(List<Treasure> datas) {
+        // 将业务获取到的“附近宝藏”添加为一个个的Marker
+        for (Treasure treasure : datas) {
+            //获取经纬度
+            LatLng position = new LatLng(treasure.getLatitude(), treasure.getLongitude());
+            addMarker(position);
+        }
+    }
+
+
+    //添加宝藏
+    private void addMarker(final LatLng position){
+        // 测试代码(添加Marker)-------------------------------------------
+        // 显示出一个Marker(标记)
+        MarkerOptions options = new MarkerOptions();
+        options.position(position);// 设置Marker位置
+        options.icon(dot);// 设置Marker图标
+        options.anchor(0.5f,0.5f);// 设置Marker的锚点(居中)
+
+        baiduMap.addOverlay(options); // 添加孚盖物，核心代码
+
+    }
+
+    //当前的标记
+    private Marker currentMarker;
+    // 对Marker的监听
+    private final BaiduMap.OnMarkerClickListener markerClickListener = new BaiduMap.OnMarkerClickListener() {
+        @Override public boolean onMarkerClick(Marker marker) {
+            currentMarker = marker;
+            // 设置Marker不可见
+            currentMarker.setVisible(false);
+            InfoWindow infoWindow = new InfoWindow(iconExpanded,marker.getPosition(),0,infoWindowClickListener);
+            // 显示一个信息窗口(icon,位置,Y轴偏移量,监听)
+            baiduMap.showInfoWindow(infoWindow);
+            return false;
+        }
+    };
+
+    // 对InfoWindow的监听
+    private final InfoWindow.OnInfoWindowClickListener infoWindowClickListener = new InfoWindow.OnInfoWindowClickListener() {
+        @Override public void onInfoWindowClick() {
+            currentMarker.setVisible(true);
+            baiduMap.hideInfoWindow();
+        }
+    };
 }

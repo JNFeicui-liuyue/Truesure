@@ -20,7 +20,7 @@ import contacts.feicui.edu.truesure.MainActivity;
 import contacts.feicui.edu.truesure.R;
 import contacts.feicui.edu.truesure.commons.ActivityUtils;
 import contacts.feicui.edu.truesure.commons.RegexUtils;
-import contacts.feicui.edu.truesure.home.HomeActivity;
+import contacts.feicui.edu.truesure.treasure.home.HomeActivity;
 import contacts.feicui.edu.truesure.user.User;
 
 /**

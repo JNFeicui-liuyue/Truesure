@@ -33,7 +33,7 @@
         <!--android:clickable="true"></com.baidu.mapapi.map.MapView>-->
 
     <fragment
-        android:name="contacts.feicui.edu.truesure.home.map.MapFragment"
+        android:name="contacts.feicui.edu.truesure.treasure.home.map.MapFragment"
         android:id="@+id/mapFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

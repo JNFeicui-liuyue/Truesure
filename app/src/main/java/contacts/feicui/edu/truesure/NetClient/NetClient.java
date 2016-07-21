@@ -5,6 +5,7 @@ import com.google.gson.GsonBuilder;
 
 import java.util.concurrent.TimeUnit;
 
+import contacts.feicui.edu.truesure.treasure.TreasureApi;
 import contacts.feicui.edu.truesure.user.UserApi;
 import okhttp3.OkHttpClient;
 import retrofit2.Retrofit;
@@ -51,6 +52,7 @@ public class NetClient {
     }
 
     private UserApi userApi;
+    private TreasureApi treasureApi;
 
     /**
      * 获取用户模型API对象
@@ -62,6 +64,16 @@ public class NetClient {
             userApi = mRetrofit.create(UserApi.class);
         }
         return userApi;
+    }
+
+    /**
+     * 获取宝藏API对象
+     */
+    public TreasureApi getTreasureApi() {
+        if (treasureApi == null) {
+            treasureApi = mRetrofit.create(TreasureApi.class);
+        }
+        return treasureApi;
     }
 
     public OkHttpClient getClient(){

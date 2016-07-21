@@ -1,4 +1,4 @@
-package contacts.feicui.edu.truesure.home;
+package contacts.feicui.edu.truesure.treasure.home;
 
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
