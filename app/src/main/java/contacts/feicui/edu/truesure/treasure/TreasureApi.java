@@ -2,6 +2,8 @@ package contacts.feicui.edu.truesure.treasure;
 
 import java.util.List;
 
+import contacts.feicui.edu.truesure.treasure.home.hide.HideTreasure;
+import contacts.feicui.edu.truesure.treasure.home.hide.HideTreasureResult;
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.POST;
@@ -16,6 +18,6 @@ public interface TreasureApi {
     @POST("/Handler/TreasureHandler.ashx?action=show")
     Call<List<Treasure>> getTreasureInArea(@Body Area body);
 
-//    @POST("/Handler/TreasureHandler.ashx?action=hide")
-//    Call<HideTreasureResult> hideTreasure(@Body HideTreasure body);
+    @POST("/Handler/TreasureHandler.ashx?action=hide")
+    Call<HideTreasureResult> hideTreasure(@Body HideTreasure body);
 }

@@ -1,6 +1,10 @@
 package contacts.feicui.edu.truesure.treasure;
 
+import com.baidu.mapapi.model.LatLng;
+import com.baidu.mapapi.utils.DistanceUtil;
 import com.google.gson.annotations.SerializedName;
+
+import contacts.feicui.edu.truesure.treasure.home.map.MapFragment;
 
 /**
 
@@ -92,14 +96,14 @@ public class Treasure {
         return size;
     }
 
-//    public double distanceToMyLocation(){
-//        // 我的当前位置
-//        LatLng myLocation = MapFragment.getMyLocation();
-//        if(myLocation == null){
-//            return 0.00d;
-//        }
-//        // 当前宝藏的位置
-//        LatLng target = new LatLng(latitude, longitude);
-//        return DistanceUtil.getDistance(target, myLocation);
-//    }
+    public double distanceToMyLocation(){
+        // 我的当前位置
+        LatLng myLocation = MapFragment.getMyLocation();
+        if(myLocation == null){
+            return 0.00d;
+        }
+        // 当前宝藏的位置
+        LatLng target = new LatLng(latitude, longitude);
+        return DistanceUtil.getDistance(target, myLocation);
+    }
 }

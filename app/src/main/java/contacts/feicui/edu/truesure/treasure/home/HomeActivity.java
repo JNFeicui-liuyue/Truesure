@@ -2,6 +2,7 @@ package contacts.feicui.edu.truesure.treasure.home;
 
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -17,6 +18,8 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import contacts.feicui.edu.truesure.R;
 import contacts.feicui.edu.truesure.commons.ActivityUtils;
+import contacts.feicui.edu.truesure.treasure.TreasureRepo;
+import contacts.feicui.edu.truesure.treasure.home.map.MapFragment;
 import contacts.feicui.edu.truesure.user.UserPrefs;
 import contacts.feicui.edu.truesure.user.account.AccountActivity;
 
@@ -36,6 +39,8 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
     @Bind(R.id.nav_view) NavigationView navigationView;
 
     private ActivityUtils activityUtils;
+    private FragmentManager fragmentManager;
+    private MapFragment mapFragment;
 
     private ImageView imageView;
 
@@ -44,6 +49,9 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         super.onCreate(savedInstanceState);
         activityUtils = new ActivityUtils(this);
         setContentView(R.layout.activity_home);
+        fragmentManager = getSupportFragmentManager();
+        mapFragment = (MapFragment) fragmentManager.findFragmentById(R.id.mapFragment);
+        TreasureRepo.getInstance().clear();
 
     }
 
@@ -90,7 +98,9 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
     public boolean onNavigationItemSelected(MenuItem item) {
         switch (item.getItemId()){
             case R.id.menu_item_hide: //埋藏宝藏
-                activityUtils.showToast(R.string.hide_treasure);
+                drawerLayout.closeDrawer(GravityCompat.START);
+                mapFragment.switchToHideTreasure();
+//                activityUtils.showToast(R.string.hide_treasure);
                 break;
         }
         // 返回true,当前选项变为checked状态
@@ -100,11 +110,15 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
     //按下back按钮关闭侧滑菜单
     @Override
     public void onBackPressed() {
-        // 是不是打开的(左)
-        if (drawerLayout.isDrawerOpen(GravityCompat.START)){
+        // DrawerLayout是开的
+        if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
             drawerLayout.closeDrawer(GravityCompat.START);
-            return;
         }
-        super.onBackPressed();
+        // DrawerLayout是关的
+        else{
+            if (mapFragment.clickBackPressed()) {
+                super.onBackPressed();
+            }
+        }
     }
 }

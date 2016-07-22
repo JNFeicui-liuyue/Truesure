@@ -51,11 +51,13 @@ public class Area {
     }
 
     @Override public int hashCode() {
-        return (int)maxLat;
+        return (int)maxLat;//纬度
     }
 
     @Override public boolean equals(Object o) {
+        //不是矩形对象
         if(!(o instanceof Area))return false;
+        //就是自己
         if(o == this)return true;
         Area other = (Area)o;
         return (int)maxLat == (int)other.maxLat && (int)maxLng == (int)other.maxLng;
