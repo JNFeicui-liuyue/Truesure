@@ -4,6 +4,8 @@ import com.baidu.mapapi.model.LatLng;
 import com.baidu.mapapi.utils.DistanceUtil;
 import com.google.gson.annotations.SerializedName;
 
+import java.io.Serializable;
+
 import contacts.feicui.edu.truesure.treasure.home.map.MapFragment;
 
 /**
@@ -12,7 +14,7 @@ import contacts.feicui.edu.truesure.treasure.home.map.MapFragment;
  * 作者：yuanchao on 2016/7/19 0019 10:40
  * 邮箱：yuanchao@feicuiedu.com
  */
-public class Treasure {
+public class Treasure implements Serializable{
 //    "htid": 173,                   //宝藏id
 //            "htpoi": "北京市大兴区福东街", //位置
 //            "htsize": 0,                   //宝物大小
