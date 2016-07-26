@@ -21,7 +21,6 @@ import com.baidu.mapapi.map.MapStatus;
 import com.baidu.mapapi.map.MapView;
 import com.baidu.mapapi.map.MarkerOptions;
 import com.baidu.mapapi.model.LatLng;
-import com.baidu.mapapi.navi.BaiduMapAppNotSupportNaviException;
 import com.baidu.mapapi.navi.BaiduMapNavigation;
 import com.baidu.mapapi.navi.NaviParaOption;
 import com.baidu.mapapi.utils.OpenClientUtil;
@@ -185,6 +184,18 @@ public class TreasureDetailActivity extends MvpActivity<TreasureDetailView,Treas
     }
 
     /**
+     * 启动百度导航（Web）
+     */
+    public void startWebNavi(LatLng startPt,String startAdr, LatLng endPt, String endAdr){
+        //构建 导航参数
+        NaviParaOption para = new NaviParaOption()
+                .startPoint(startPt).endPoint(endPt)
+                .startName(startAdr).endName(endAdr);
+
+        BaiduMapNavigation.openWebBaiduMapNavi(para,this);
+    }
+
+    /**
      * 启动百度地图步行导航（Native）
      */
     public void startWalkingNavi(LatLng startPt,String startAdr, LatLng endPt, String endAdr){
@@ -192,11 +203,16 @@ public class TreasureDetailActivity extends MvpActivity<TreasureDetailView,Treas
         NaviParaOption para = new NaviParaOption()
                 .startPoint(startPt).endPoint(endPt)
                 .startName(startAdr).endName(endAdr);
-        try {
-            BaiduMapNavigation.openBaiduMapWalkNavi(para,this);
-        } catch (BaiduMapAppNotSupportNaviException e) {
-            e.printStackTrace();
-            showdialog();
+//        try {
+//            BaiduMapNavigation.openBaiduMapWalkNavi(para,this);
+//        } catch (BaiduMapAppNotSupportNaviException e) {
+//            e.printStackTrace();
+//            showdialog();
+//        }
+
+        //要是没有就去下载
+        if (!BaiduMapNavigation.openBaiduMapWalkNavi(para,this)){
+            startWebNavi(startPt, startAdr, endPt, endAdr);
         }
     }
 
@@ -209,10 +225,14 @@ public class TreasureDetailActivity extends MvpActivity<TreasureDetailView,Treas
                 .startPoint(startPt).endPoint(endPt)
                 .startName(startAdr).endName(endAdr);
 
-        try {
-            BaiduMapNavigation.openBaiduMapBikeNavi(para, this);
-        } catch (BaiduMapAppNotSupportNaviException e) {
-            e.printStackTrace();
+//        try {
+//            BaiduMapNavigation.openBaiduMapBikeNavi(para, this);
+//        } catch (BaiduMapAppNotSupportNaviException e) {
+//            e.printStackTrace();
+//            showdialog();
+//        }
+
+        if (!BaiduMapNavigation.openBaiduMapBikeNavi(para,this)){
             showdialog();
         }
     }

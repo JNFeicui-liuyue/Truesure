@@ -8,6 +8,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
@@ -19,6 +20,7 @@ import butterknife.ButterKnife;
 import contacts.feicui.edu.truesure.R;
 import contacts.feicui.edu.truesure.commons.ActivityUtils;
 import contacts.feicui.edu.truesure.treasure.TreasureRepo;
+import contacts.feicui.edu.truesure.treasure.home.list.TreasureListFragment;
 import contacts.feicui.edu.truesure.treasure.home.map.MapFragment;
 import contacts.feicui.edu.truesure.user.UserPrefs;
 import contacts.feicui.edu.truesure.user.account.AccountActivity;
@@ -37,10 +39,12 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
     @Bind(R.id.toolbar) Toolbar toolbar;
     @Bind(R.id.drawer_layout) DrawerLayout drawerLayout;
     @Bind(R.id.nav_view) NavigationView navigationView;
+//    @Bind(R.id.fragment_container)FrameLayout frameLayout
 
     private ActivityUtils activityUtils;
     private FragmentManager fragmentManager;
     private MapFragment mapFragment;
+    private TreasureListFragment listFragment;
 
     private ImageView imageView;
 
@@ -120,5 +124,54 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                 super.onBackPressed();
             }
         }
+    }
+
+    //准备
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        MenuItem item = menu.findItem(R.id.action_toggle);
+        //正在用List的方式显示
+        if (listFragment != null && listFragment.isAdded()){
+            item.setIcon(R.drawable.ic_map);
+        }else {
+            item.setIcon(R.drawable.ic_view_list);
+        }
+        return super.onPrepareOptionsMenu(menu);
+    }
+
+    //创建
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_home,menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    //选择
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()){
+            case R.id.action_toggle :
+                showListFragment();
+                //通过此方法，将使得onPrepareOptionsMenu方法得到触发
+                invalidateOptionsMenu();
+                break;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    private void showListFragment() {
+        //当前显示的就是List
+        if (listFragment != null && listFragment.isAdded()){
+            //从回退栈里取出
+            fragmentManager.popBackStack(null,FragmentManager.POP_BACK_STACK_INCLUSIVE);
+            //remove掉
+            fragmentManager.beginTransaction().remove(listFragment).commit();
+            return;
+        }
+        listFragment = new TreasureListFragment();
+        fragmentManager.beginTransaction()
+                .replace(R.id.fragment_container,listFragment)
+                .addToBackStack(null)
+                .commit();
     }
 }
